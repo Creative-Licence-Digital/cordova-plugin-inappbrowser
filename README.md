@@ -17,6 +17,8 @@
          under the License.
 -->
 
-# org.apache.cordova.inappbrowser
+InAppBrowser for WhiteShoppernova
+
+Forked from org.apache.cordova.inappbrowser
 
 Plugin documentation: [doc/index.md](doc/index.md)
