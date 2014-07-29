@@ -33,7 +33,7 @@
 #define    LOCATIONBAR_HEIGHT 21.0
 #define    FOOTER_HEIGHT ((TOOLBAR_HEIGHT) + (LOCATIONBAR_HEIGHT))
 
-#define    RED_COLOR
+#define    RED_COLOR [UIColor colorWithRed:(236.0 / 255.0) green:(28.0 / 255.0) blue:(36.0 / 255.0) alpha:1]
 
 #pragma mark CDVInAppBrowser
 
