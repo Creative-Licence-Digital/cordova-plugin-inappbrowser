@@ -30,7 +30,7 @@
 #define    kInAppBrowserToolbarBarPositionTop @"top"
 
 #define    TOOLBAR_HEIGHT 48.0
-#define    LOCATIONBAR_HEIGHT 21.0
+#define    LOCATIONBAR_HEIGHT 14.0
 #define    FOOTER_HEIGHT ((TOOLBAR_HEIGHT) + (LOCATIONBAR_HEIGHT))
 
 #define    RED_COLOR [UIColor colorWithRed:(236.0 / 255.0) green:(28.0 / 255.0) blue:(36.0 / 255.0) alpha:1]
@@ -476,7 +476,7 @@
     // We create the views in code for primarily for ease of upgrades and not requiring an external .xib to be included
     
     CGRect webViewBounds = self.view.bounds;
-    BOOL toolbarIsAtBottom = ![_browserOptions.toolbarposition isEqualToString:kInAppBrowserToolbarBarPositionTop];
+    
     webViewBounds.size.height -= _browserOptions.location ? FOOTER_HEIGHT : TOOLBAR_HEIGHT;
     self.webView = [[UIWebView alloc] initWithFrame:webViewBounds];
     
@@ -503,7 +503,7 @@
     self.spinner.clearsContextBeforeDrawing = NO;
     self.spinner.clipsToBounds = NO;
     self.spinner.contentMode = UIViewContentModeScaleToFill;
-    self.spinner.frame = CGRectMake(454.0, 231.0, 20.0, 20.0);
+    self.spinner.frame = CGRectMake(150, 36.0, 20.0, 20.0);
     self.spinner.hidden = YES;
     self.spinner.hidesWhenStopped = YES;
     self.spinner.multipleTouchEnabled = NO;
@@ -516,16 +516,19 @@
     
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    fixedSpaceButton.width = 20;
+    UIBarButtonItem* fixedLargeSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    fixedLargeSpaceButton.width = 8.0;
     
-    float toolbarY = toolbarIsAtBottom ? self.view.bounds.size.height - TOOLBAR_HEIGHT : 0.0;
+    UIBarButtonItem* fixedSmallSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    fixedSmallSpaceButton.width = 2.0;
+    
+    float toolbarY = 0.0;
     CGRect toolbarFrame = CGRectMake(0.0, toolbarY, self.view.bounds.size.width, TOOLBAR_HEIGHT);
     
     self.toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
     self.toolbar.alpha = 1.000;
     self.toolbar.autoresizesSubviews = YES;
-    self.toolbar.autoresizingMask = toolbarIsAtBottom ? (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin) : UIViewAutoresizingFlexibleWidth;
+    self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.toolbar.barStyle = UIBarStyleBlackOpaque;
     self.toolbar.clearsContextBeforeDrawing = NO;
     self.toolbar.clipsToBounds = NO;
@@ -539,20 +542,14 @@
         self.toolbar.tintColor = [UIColor whiteColor];
         self.toolbar.barTintColor = RED_COLOR;
         self.toolbar.translucent = NO;
-        UIView *statusBar = [[UIView alloc] init];
-        statusBar.frame = CGRectMake(0, 0, 320, 20);
-        statusBar.backgroundColor = RED_COLOR;
-        [self.view addSubview:statusBar];
     }
     
-    CGFloat labelInset = 5.0;
-    float locationBarY = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : self.view.bounds.size.height - LOCATIONBAR_HEIGHT;
+    CGFloat labelInset = 80.0;
     
-    self.addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelInset, locationBarY, self.view.bounds.size.width - labelInset, LOCATIONBAR_HEIGHT)];
+    self.addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelInset, 48.0, self.view.bounds.size.width - labelInset * 2.0, LOCATIONBAR_HEIGHT)];
     self.addressLabel.adjustsFontSizeToFitWidth = NO;
     self.addressLabel.alpha = 1.000;
     self.addressLabel.autoresizesSubviews = YES;
-    self.addressLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     self.addressLabel.backgroundColor = [UIColor clearColor];
     self.addressLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     self.addressLabel.clearsContextBeforeDrawing = YES;
@@ -561,21 +558,37 @@
     self.addressLabel.enabled = YES;
     self.addressLabel.hidden = NO;
     self.addressLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    
-    if ([self.addressLabel respondsToSelector:NSSelectorFromString(@"setMinimumScaleFactor:")]) {
-        [self.addressLabel setValue:@(10.0/[UIFont labelFontSize]) forKey:@"minimumScaleFactor"];
-    } else if ([self.addressLabel respondsToSelector:NSSelectorFromString(@"setMinimumFontSize:")]) {
-        [self.addressLabel setValue:@(10.0) forKey:@"minimumFontSize"];
-    }
-    
+    self.addressLabel.font = [UIFont systemFontOfSize: 11.0];
     self.addressLabel.multipleTouchEnabled = NO;
     self.addressLabel.numberOfLines = 1;
     self.addressLabel.opaque = NO;
     self.addressLabel.shadowOffset = CGSizeMake(0.0, -1.0);
-    self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
-    self.addressLabel.textAlignment = NSTextAlignmentLeft;
+    self.addressLabel.text = NSLocalizedString(@"", nil);
+    self.addressLabel.textAlignment = NSTextAlignmentCenter;
     self.addressLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.addressLabel.userInteractionEnabled = NO;
+    
+    self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelInset, 24.0, self.view.bounds.size.width - labelInset * 2.0, 32.0)];
+    self.titleLabel.adjustsFontSizeToFitWidth = NO;
+    self.titleLabel.alpha = 1.000;
+    self.titleLabel.autoresizesSubviews = YES;
+    self.titleLabel.backgroundColor = [UIColor clearColor];
+    self.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+    self.titleLabel.clearsContextBeforeDrawing = YES;
+    self.titleLabel.clipsToBounds = YES;
+    self.titleLabel.contentMode = UIViewContentModeScaleToFill;
+    self.titleLabel.enabled = YES;
+    self.titleLabel.hidden = NO;
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.titleLabel.font = [UIFont systemFontOfSize: 16.0];
+    self.titleLabel.multipleTouchEnabled = NO;
+    self.titleLabel.numberOfLines = 1;
+    self.titleLabel.opaque = NO;
+    self.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
+    self.titleLabel.text = NSLocalizedString(@"", nil);
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.titleLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
+    self.titleLabel.userInteractionEnabled = NO;
     
     NSString* frontArrowString = NSLocalizedString(@"\U000025B6\U0000FE0E", nil); // create arrow from Unicode char
     self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
@@ -587,12 +600,19 @@
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
     
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedLargeSpaceButton, self.forwardButton, fixedSmallSpaceButton]];
     
-    self.view.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.toolbar];
     [self.view addSubview:self.addressLabel];
+    [self.view addSubview:self.titleLabel];
     [self.view addSubview:self.spinner];
+    
+    if (IsAtLeastiOSVersion(@"7.0")) {
+        UIView *statusBar = [[UIView alloc] init];
+        statusBar.frame = CGRectMake(0, 0, 320, 20);
+        statusBar.backgroundColor = RED_COLOR;
+        [self.view addSubview:statusBar];
+    }
 }
 
 - (void) setWebViewFrame : (CGRect) frame {
@@ -825,11 +845,13 @@
 {
     // loading url, start spinner, update back/forward
     
-    self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
+    self.titleLabel.text = NSLocalizedString(@"", nil);
+    self.addressLabel.text = NSLocalizedString(@"", nil);
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
     
     [self.spinner startAnimating];
+    [self.spinner setHidden:NO];
     
     return [self.navigationDelegate webViewDidStartLoad:theWebView];
 }
@@ -847,12 +869,15 @@
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView
 {
     // update url, stop spinner, update back/forward
+    self.currentTitle = [theWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
     
     self.addressLabel.text = [self.currentURL absoluteString];
+    self.titleLabel.text = self.currentTitle;
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
     
     [self.spinner stopAnimating];
+    [self.spinner setHidden:YES];
     
     // Work around a bug where the first time a PDF is opened, all UIWebViews
     // reload their User-Agent from NSUserDefaults.
@@ -881,8 +906,9 @@
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
     [self.spinner stopAnimating];
+    [self.spinner setHidden:YES];
     
-    self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
+    self.addressLabel.text = NSLocalizedString(@"", nil);
     
     [self.navigationDelegate webView:theWebView didFailLoadWithError:error];
 }
