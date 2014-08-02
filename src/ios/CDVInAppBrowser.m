@@ -148,7 +148,7 @@
     }
     
     [self.inAppBrowserViewController showLocationBar:browserOptions.location];
-    [self.inAppBrowserViewController showToolBar:browserOptions.toolbar];
+    
     if (browserOptions.closebuttoncaption != nil) {
         [self.inAppBrowserViewController setCloseButtonTitle:browserOptions.closebuttoncaption];
     }
@@ -651,26 +651,7 @@
 
 - (void)showToolBar:(BOOL)show
 {
-    CGRect toolbarFrame = self.toolbar.frame;
-    
-    // prevent double show/hide
-    if (show == !(self.toolbar.hidden)) {
-        return;
-    }
-    
-    if (show) {
-        self.toolbar.hidden = NO;
-        CGRect webViewBounds = self.view.bounds;
-        webViewBounds.size.height -= TOOLBAR_HEIGHT;
-        
-        toolbarFrame.origin.y = 0;
-        webViewBounds.origin.y += toolbarFrame.size.height;
-        
-        [self setWebViewFrame:webViewBounds];
-        
-    } else {
-        self.toolbar.hidden = YES;
-    }
+    return;
 }
 
 - (void)viewDidLoad
