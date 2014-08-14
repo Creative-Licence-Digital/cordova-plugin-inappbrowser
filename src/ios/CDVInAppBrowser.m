@@ -30,8 +30,6 @@
 #define    LOCATIONBAR_HEIGHT 14.0
 #define    LABELINSET 80.0
 
-#define    RED_COLOR [UIColor colorWithRed:(236.0 / 255.0) green:(28.0 / 255.0) blue:(36.0 / 255.0) alpha:1]
-
 #pragma mark CDVInAppBrowser
 
 @interface CDVInAppBrowser () {
@@ -69,11 +67,11 @@
 
 - (BOOL) isSystemUrl:(NSURL*)url
 {
-	if ([[url host] isEqualToString:@"itunes.apple.com"]) {
-		return YES;
-	}
+    if ([[url host] isEqualToString:@"itunes.apple.com"]) {
+        return YES;
+    }
     
-	return NO;
+    return NO;
 }
 
 - (void)open:(CDVInvokedUrlCommand*)command
@@ -519,6 +517,16 @@
     UIBarButtonItem* fixedSmallSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedSmallSpaceButton.width = 2.0;
     
+    // set toolbar background color
+    UIColor *toolbarBackgroundColor = [UIColor grayColor];
+    if (_browserOptions.toolbarcolor) {
+        NSString *rgbString = _browserOptions.toolbarcolor;
+        NSRange range = NSMakeRange(1, rgbString.length - 2);
+        NSString *rgbColor = [rgbString substringWithRange:range];
+        NSArray *chunks = [rgbColor componentsSeparatedByString: @";"];
+        toolbarBackgroundColor = [UIColor colorWithRed:([chunks[0] intValue] / 255.0) green:([chunks[1] intValue] / 255.0) blue:([chunks[2] intValue] / 255.0) alpha:1];
+    }
+    
     CGRect toolbarFrame = CGRectMake(0.0, 0.0, self.view.bounds.size.width, TOOLBAR_HEIGHT);
     
     self.toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
@@ -536,7 +544,7 @@
     
     if (IsAtLeastiOSVersion(@"7.0")) {
         self.toolbar.tintColor = [UIColor whiteColor];
-        self.toolbar.barTintColor = RED_COLOR;
+        self.toolbar.barTintColor = toolbarBackgroundColor;
         self.toolbar.translucent = NO;
     }
     
@@ -604,7 +612,7 @@
     if (IsAtLeastiOSVersion(@"7.0")) {
         UIView *statusBar = [[UIView alloc] init];
         statusBar.frame = CGRectMake(0, 0, 320, 20);
-        statusBar.backgroundColor = RED_COLOR;
+        statusBar.backgroundColor = toolbarBackgroundColor;
         [self.view addSubview:statusBar];
     }
 }
