@@ -80,6 +80,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String CLOSE_BUTTON_CAPTION = "closebuttoncaption";
     private static final String CLEAR_ALL_CACHE = "clearcache";
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
+    private static final String TOOLBAR_BACKGROUND_COLOR = "toolbarcolor";
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -90,6 +91,7 @@ public class InAppBrowser extends CordovaPlugin {
     private String buttonLabel = "Done";
     private boolean clearAllCache= false;
     private boolean clearSessionCache=false;
+    private String toolbarBackgroundColor;
 
     /**
      * Executes the request and returns PluginResult.
@@ -288,6 +290,9 @@ public class InAppBrowser extends CordovaPlugin {
                     String key = option.nextToken();
                     if (key.equalsIgnoreCase(CLOSE_BUTTON_CAPTION)) {
                         this.buttonLabel = option.nextToken();
+                    } else if (key.equalsIgnoreCase(TOOLBAR_BACKGROUND_COLOR)) {
+                        // RGB configuration for the tool bar background color (r;g;b)
+                        this.toolbarBackgroundColor = option.nextToken();
                     } else {
                         Boolean value = option.nextToken().equals("no") ? Boolean.FALSE : Boolean.TRUE;
                         map.put(key, value);
@@ -410,6 +415,10 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowser getInAppBrowser(){
         return this;
     }
+    
+    private String getToolbarBackgroundColor() {
+        return this.toolbarBackgroundColor;
+    }
 
     /**
      * Display a new browser with the specified URL.
@@ -439,6 +448,7 @@ public class InAppBrowser extends CordovaPlugin {
                     clearSessionCache = cache.booleanValue();
                 }
             }
+            
         }
         
         final CordovaWebView thatWebView = this.webView;
@@ -473,8 +483,14 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Toolbar layout
                 RelativeLayout toolbar = new RelativeLayout(cordova.getActivity());
-                int redColor = Color.rgb(236, 28, 36);
-                toolbar.setBackgroundColor(redColor);
+                int toolbarColor = Color.GRAY;
+                String backgroundColor = getToolbarBackgroundColor();
+                if (backgroundColor != null) {
+                    String rgbString = backgroundColor.substring(1, backgroundColor.length() - 1);
+                    String[] splitRGB = rgbString.split(";");
+                    toolbarColor = Color.rgb(Integer.parseInt(splitRGB[0]), Integer.parseInt(splitRGB[1]), Integer.parseInt(splitRGB[2]));
+                }
+                toolbar.setBackgroundColor(toolbarColor);
                 toolbar.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, this.dpToPixels(44)));
                 toolbar.setPadding(this.dpToPixels(2), this.dpToPixels(2), this.dpToPixels(2), this.dpToPixels(2));
                 toolbar.setHorizontalGravity(Gravity.LEFT);
@@ -546,7 +562,7 @@ public class InAppBrowser extends CordovaPlugin {
                 edittext.setLayoutParams(textLayoutParams);
                 edittext.setId(4);
                 edittext.setSingleLine(true);
-                edittext.setBackgroundColor(redColor);
+                edittext.setBackgroundColor(toolbarColor);
                 edittext.setText(url);
                 edittext.setTextColor(Color.WHITE);
                 edittext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
