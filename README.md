@@ -17,7 +17,7 @@
          under the License.
 -->
 
-InAppBrowser for WhiteShoppernova
+Custom InAppBrowser for CLD projects
 
 Forked from org.apache.cordova.inappbrowser
 
