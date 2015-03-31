@@ -193,6 +193,10 @@
         }
     }
 
+    if (browserOptions.statusbarstyle) {
+        self.inAppBrowserViewController.statusBarStyle = browserOptions.statusbarstyle;
+    }
+
     if (browserOptions.fullscreen) {
         self.inAppBrowserViewController.edgesForExtendedLayout = UIRectEdgeNone;
     }
@@ -210,7 +214,10 @@
         self.inAppBrowserViewController.webView.suppressesIncrementalRendering = browserOptions.suppressesincrementalrendering;
     }
 
+
+
     [self.inAppBrowserViewController navigateTo:url];
+
     if (!browserOptions.hidden) {
         [self show:nil];
     }
@@ -865,7 +872,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     if (IsAtLeastiOSVersion(@"7.0")) {
-        [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
+        if ([self statusBarStyle]) {
+            [[UIApplication sharedApplication] setStatusBarStyle:[self statusBarStyle]];
+        } else {
+            [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
+        }
     }
     [self rePositionViews];
 
@@ -1050,6 +1061,10 @@
                 } else if ([key isEqualToString:@"statusbarstyle"]) {
                     if ([value isEqualToString:@"styleLightContent"]) {
                         obj.statusbarstyle = UIStatusBarStyleLightContent;
+                    } else if ([value isEqualToString:@"styleBlackOpaque"]) {
+                        obj.statusbarstyle = UIStatusBarStyleBlackOpaque;
+                    } else if ([value isEqualToString:@"styleBlackTranslucent"]) {
+                        obj.statusbarstyle = UIStatusBarStyleBlackTranslucent;
                     } else if ([value isEqualToString:@"styleDefault"]) {
                         obj.statusbarstyle = UIStatusBarStyleDefault;
                     }
