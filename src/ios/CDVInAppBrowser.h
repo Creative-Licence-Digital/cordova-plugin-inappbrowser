@@ -46,12 +46,14 @@
 @property (nonatomic, copy) NSString* closebuttoncaption;
 @property (nonatomic, assign) BOOL clearcache;
 @property (nonatomic, assign) BOOL clearsessioncache;
+@property (nonatomic, assign) BOOL fullscreen;
 
 @property (nonatomic, copy) NSString* presentationstyle;
 @property (nonatomic, copy) NSString* transitionstyle;
 
+@property (nonatomic, copy) NSString* toolbarposition;
 @property (nonatomic, copy) NSString* toolbarcolor;
-
+@property (nonatomic, assign) UIStatusBarStyle statusbarstyle;
 @property (nonatomic, assign) BOOL enableviewportscale;
 @property (nonatomic, assign) BOOL mediaplaybackrequiresuseraction;
 @property (nonatomic, assign) BOOL allowinlinemediaplayback;
@@ -86,11 +88,12 @@
 @property (nonatomic, weak) CDVInAppBrowser* navigationDelegate;
 @property (nonatomic) NSURL* currentURL;
 @property (nonatomic) NSString* currentTitle;
+@property (nonatomic) UIStatusBarStyle statusBarStyle;
 
 - (void)close;
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
-- (void)showToolBar:(BOOL)show;
+- (void)showToolBar:(BOOL)show : (NSString *) toolbarPosition;
 - (void)setCloseButtonTitle:(NSString*)title;
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions;
@@ -102,4 +105,3 @@
 @property (nonatomic, weak) id <CDVScreenOrientationDelegate> orientationDelegate;
 
 @end
-
