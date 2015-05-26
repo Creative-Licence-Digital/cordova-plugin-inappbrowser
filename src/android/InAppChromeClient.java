@@ -18,12 +18,15 @@
 */
 package org.apache.cordova.inappbrowser;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
-
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.webkit.JsPromptResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
@@ -97,6 +100,7 @@ public class InAppChromeClient extends WebChromeClient {
      * @param defaultValue
      * @param result
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
         // See if the prompt string uses the 'gap-iab' protocol. If so, the remainder should be the id of a callback to execute.
@@ -117,6 +121,16 @@ public class InAppChromeClient extends WebChromeClient {
                     this.webView.sendPluginResult(scriptResult, scriptCallbackId);
                     result.confirm("");
                     return true;
+                }
+            }
+            else if (defaultValue.startsWith("gap-code://")) {
+                try {
+                    String encodedCode = defaultValue.substring(11);
+                    String code = URLDecoder.decode(encodedCode, "UTF-8");
+                    this.webView.evaluateJavascript(code, null);
+                } catch (UnsupportedEncodingException e) {
+                    LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + defaultValue);
+                    e.printStackTrace();
                 }
             }
             else
