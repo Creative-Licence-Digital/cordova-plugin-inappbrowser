@@ -18,6 +18,8 @@
 */
 package org.apache.cordova.inappbrowser;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -843,6 +845,22 @@ public class InAppBrowser extends CordovaPlugin {
                 Log.d(LOG_TAG, "Should never happen");
             }
             
+        }
+        
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            if (url.startsWith("gap-code://")) {
+                try {
+                    String encodedCode = url.substring(11);
+                    String code = URLDecoder.decode(encodedCode, "UTF-8");
+                    this.webView.evaluateJavascript(code, null);
+                } catch (UnsupportedEncodingException e) {
+                    LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
+                    e.printStackTrace();
+                }
+            } else {
+                super.onLoadResource(view, url);
+            }
         }
     }
 }
