@@ -97,6 +97,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String LOAD_START_EVENT = "loadstart";
     private static final String LOAD_STOP_EVENT = "loadstop";
     private static final String LOAD_ERROR_EVENT = "loaderror";
+    private static final String CLOSE_BUTTON_CAPTION = "closebuttoncaption";
     private static final String CLEAR_ALL_CACHE = "clearcache";
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
     private static final String TOOLBAR_BACKGROUND_COLOR = "toolbarcolor";
@@ -713,6 +714,8 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.setId(6);
                 inAppWebView.getSettings().setLoadWithOverviewMode(true);
                 inAppWebView.getSettings().setUseWideViewPort(true);
+                inAppWebView.getSettings().setJavaScriptEnabled(true);
+                inAppWebView.getSettings().setAllowFileAccessFromFileURLs(true);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
 
