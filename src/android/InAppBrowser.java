@@ -926,7 +926,10 @@ public class InAppBrowser extends CordovaPlugin {
                 try {
                     String encodedCode = url.substring(11);
                     String code = URLDecoder.decode(encodedCode, "UTF-8");
-                    this.webView.evaluateJavascript(code, null);
+                    this.webView.loadUrl("javascript:" + code);
+                    // TODO: Remove if no longer needed. Cannot compile with
+                    // the following code present as the method has been removed
+                    // this.webView.evaluateJavascript(code, null);
                 } catch (UnsupportedEncodingException e) {
                     LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
                     e.printStackTrace();
