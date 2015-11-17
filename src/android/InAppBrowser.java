@@ -102,6 +102,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
     private static final String TOOLBAR_BACKGROUND_COLOR = "toolbarcolor";
     private static final String HARDWARE_BACK_BUTTON = "hardwareback";
+    private static final String CLOSE_WITH_BACK_BUTTON = "closeWithBackButton";
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -115,6 +116,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean clearAllCache = false;
     private boolean clearSessionCache = false;
     private boolean hadwareBackButton = true;
+    private boolean closeWithBackButton = false;
     private String toolbarBackgroundColor;
 
     /**
@@ -449,6 +451,14 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
     /**
+     * Is the application going to close when back button is pressed.
+     * @return boolean
+     */
+    public boolean closeWithBackButton() {
+        return closeWithBackButton;
+    }
+
+    /**
      * Checks to see if it is possible to go forward one page in history, then does so.
      */
     private void goForward() {
@@ -528,6 +538,10 @@ public class InAppBrowser extends CordovaPlugin {
                 if (cache != null) {
                     clearSessionCache = cache.booleanValue();
                 }
+            }
+            Boolean closeWithBackButtonOption = features.get(CLOSE_WITH_BACK_BUTTON);
+            if (closeWithBackButtonOption != null) {
+                closeWithBackButton = closeWithBackButtonOption.booleanValue();
             }
 
         }

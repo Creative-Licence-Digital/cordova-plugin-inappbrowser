@@ -39,10 +39,14 @@ public class InAppBrowserDialog extends Dialog {
 
     public void onBackPressed () {
       // disable the back button on purpose
-      /*
         if (this.inAppBrowser == null) {
             this.dismiss();
         } else {
+            if (this.inAppBrowser.closeWithBackButton()) {
+                this.inAppBrowser.closeDialog();
+                return;
+            }
+
             // better to go through the in inAppBrowser
             // because it does a clean up
             if (this.inAppBrowser.hardwareBack() && this.inAppBrowser.canGoBack()) {
@@ -51,6 +55,5 @@ public class InAppBrowserDialog extends Dialog {
                 this.inAppBrowser.closeDialog();
             }
         }
-        */
     }
 }
