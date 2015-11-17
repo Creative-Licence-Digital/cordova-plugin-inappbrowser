@@ -101,6 +101,10 @@ instance, or the system browser.
     - __zoom__: set to `yes` to show Android browser's zoom controls, set to `no` to hide them.  Default value is `yes`.
     - __hardwareback__: set to `yes` to use the hardware back button to navigate backwards through the `InAppBrowser`'s history. If there is no previous page, the `InAppBrowser` will close.  The default value is `yes`, so you must set it to `no` if you want the back button to simply close the InAppBrowser.
 
+    - __closeWithBackButton__: set to `yes` to allow users to close the inAppBrowser by pressing back button. Such behavior is disabled by default. Not available in the original plugin; added for CLD.
+
+
+
     iOS only:
 
     - __closebuttoncaption__: set to a string to use as the __Done__ button's caption. Note that you need to localize this value yourself.
