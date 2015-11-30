@@ -229,14 +229,17 @@
 
     _previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
 
-    CDVInAppBrowserNavigationController* nav = [[CDVInAppBrowserNavigationController alloc]
-                                                initWithRootViewController:self.inAppBrowserViewController];
+    __block CDVInAppBrowserNavigationController* nav = [[CDVInAppBrowserNavigationController alloc]
+                                   initWithRootViewController:self.inAppBrowserViewController];
     nav.orientationDelegate = self.inAppBrowserViewController;
     nav.navigationBarHidden = YES;
+
+    __weak CDVInAppBrowser* weakSelf = self;
+
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.inAppBrowserViewController != nil) {
-            [self.viewController presentViewController:nav animated:YES completion:nil];
+        if (weakSelf.inAppBrowserViewController != nil) {
+            [weakSelf.viewController presentViewController:nav animated:YES completion:nil];
         }
     });
 }
@@ -467,7 +470,9 @@
     self.inAppBrowserViewController = nil;
 
     if (IsAtLeastiOSVersion(@"7.0")) {
-        [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
+        if (_previousStatusBarStyle != -1) {
+            [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
+        }
     }
 
     _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
@@ -498,6 +503,11 @@
     }
 
     return self;
+}
+
+// Prevent crashes on closing windows
+-(void)dealloc {
+   self.webView.delegate = nil;
 }
 
 - (void)createViews
@@ -814,12 +824,14 @@
         [self.navigationDelegate browserExit];
     }
 
+    __weak UIViewController* weakSelf = self;
+
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self respondsToSelector:@selector(presentingViewController)]) {
-            [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+        if ([weakSelf respondsToSelector:@selector(presentingViewController)]) {
+            [[weakSelf presentingViewController] dismissViewControllerAnimated:YES completion:nil];
         } else {
-            [[self parentViewController] dismissViewControllerAnimated:YES completion:nil];
+            [[weakSelf parentViewController] dismissViewControllerAnimated:YES completion:nil];
         }
     });
 }
@@ -831,10 +843,11 @@
     if (_userAgentLockToken != 0) {
         [self.webView loadRequest:request];
     } else {
+        __weak CDVInAppBrowserViewController* weakSelf = self;
         [CDVUserAgentUtil acquireLock:^(NSInteger lockToken) {
             _userAgentLockToken = lockToken;
             [CDVUserAgentUtil setUserAgent:_userAgent lockToken:lockToken];
-            [self.webView loadRequest:request];
+            [weakSelf.webView loadRequest:request];
         }];
     }
 }
