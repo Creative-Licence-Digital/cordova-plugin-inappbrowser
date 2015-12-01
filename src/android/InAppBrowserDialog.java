@@ -20,6 +20,7 @@ package org.apache.cordova.inappbrowser;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.app.Activity;
 
 /**
  * Created by Oliver on 22/11/2013.
@@ -44,6 +45,12 @@ public class InAppBrowserDialog extends Dialog {
         } else {
             if (this.inAppBrowser.closeWithBackButton()) {
                 this.inAppBrowser.closeDialog();
+                return;
+            }
+
+            if (this.inAppBrowser.closeAppWithBackButton()) {
+                Activity activity = (Activity) context;
+                activity.moveTaskToBack(true);
                 return;
             }
 

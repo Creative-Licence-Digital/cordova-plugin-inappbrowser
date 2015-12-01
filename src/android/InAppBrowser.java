@@ -102,6 +102,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String TOOLBAR_BACKGROUND_COLOR = "toolbarcolor";
     private static final String HARDWARE_BACK_BUTTON = "hardwareback";
     private static final String CLOSE_WITH_BACK_BUTTON = "closeWithBackButton";
+    private static final String CLOSE_APP_WITH_BACK_BUTTON = "closeAppWithBackButton";
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -116,6 +117,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean clearSessionCache = false;
     private boolean hadwareBackButton = true;
     private boolean closeWithBackButton = false;
+    private boolean closeAppWithBackButton = false;
     private String toolbarBackgroundColor;
 
     /**
@@ -456,6 +458,8 @@ public class InAppBrowser extends CordovaPlugin {
         return closeWithBackButton;
     }
 
+    public boolean closeAppWithBackButton() { return closeAppWithBackButton; }
+
     /**
      * Checks to see if it is possible to go forward one page in history, then does so.
      */
@@ -541,7 +545,10 @@ public class InAppBrowser extends CordovaPlugin {
             if (closeWithBackButtonOption != null) {
                 closeWithBackButton = closeWithBackButtonOption.booleanValue();
             }
-
+            Boolean closeAppWithBackButtonOption = features.get(CLOSE_APP_WITH_BACK_BUTTON);
+            if (closeAppWithBackButtonOption != null) {
+                closeAppWithBackButton = closeAppWithBackButtonOption.booleanValue();
+            }
         }
 
         final CordovaWebView thatWebView = this.webView;
@@ -664,8 +671,8 @@ public class InAppBrowser extends CordovaPlugin {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
                         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                          navigate(edittext.getText().toString());
-                          return true;
+                            navigate(edittext.getText().toString());
+                            return true;
                         }
                         return false;
                     }
@@ -955,4 +962,3 @@ public class InAppBrowser extends CordovaPlugin {
         }
     }
 }
-
