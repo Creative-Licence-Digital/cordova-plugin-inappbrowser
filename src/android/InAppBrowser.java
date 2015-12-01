@@ -947,7 +947,10 @@ public class InAppBrowser extends CordovaPlugin {
             if (url.startsWith("gap-code://")) {
                 try {
                     String encodedCode = url.substring(11);
-                    String code = URLDecoder.decode(encodedCode, "UTF-8");
+                    // We do not wish to decode '+' character as a space
+                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
+
+                    String code = URLDecoder.decode(decodeCandidate, "UTF-8");
                     this.webView.loadUrl("javascript:" + code);
                     // TODO: Remove if no longer needed. Cannot compile with
                     // the following code present as the method has been removed
