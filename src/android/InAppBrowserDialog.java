@@ -43,14 +43,14 @@ public class InAppBrowserDialog extends Dialog {
         if (this.inAppBrowser == null) {
             this.dismiss();
         } else {
-            if (this.inAppBrowser.closeWithBackButton()) {
-                this.inAppBrowser.closeDialog();
-                return;
-            }
-
             if (this.inAppBrowser.closeAppWithBackButton()) {
                 Activity activity = (Activity) context;
                 activity.moveTaskToBack(true);
+                return;
+            }
+
+            if (this.inAppBrowser.closeWithBackButton()) {
+                this.inAppBrowser.closeDialog();
                 return;
             }
 
