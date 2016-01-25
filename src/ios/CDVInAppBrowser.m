@@ -201,12 +201,6 @@
         self.inAppBrowserViewController.edgesForExtendedLayout = UIRectEdgeNone;
     }
 
-    if (browserOptions.statusbarstyle) {
-        self.inAppBrowserViewController.statusBarStyle = browserOptions.statusbarstyle;
-    }
-
-
-
     // UIWebView options
     self.inAppBrowserViewController.webView.scalesPageToFit = browserOptions.enableviewportscale;
     self.inAppBrowserViewController.webView.mediaPlaybackRequiresUserAction = browserOptions.mediaplaybackrequiresuseraction;
