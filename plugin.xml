@@ -19,8 +19,8 @@
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-           id="org.apache.cordova.inappbrowser"
-      version="0.7.1-dev">
+           id="cordova-plugin-inappbrowser"
+      version="1.1.0">
 
     <name>InAppBrowser</name>
     <description>Cordova InAppBrowser Plugin</description>
@@ -36,6 +36,7 @@
     <!-- android -->
     <platform name="android">
         <js-module src="www/inappbrowser.js" name="inappbrowser">
+            <clobbers target="cordova.InAppBrowser.open" />
             <clobbers target="window.open" />
         </js-module>
         <config-file target="res/xml/config.xml" parent="/*">
@@ -66,10 +67,10 @@
 
     </platform>
 
-    
     <!-- ios -->
     <platform name="ios">
         <js-module src="www/inappbrowser.js" name="inappbrowser">
+            <clobbers target="cordova.InAppBrowser.open" />
             <clobbers target="window.open" />
         </js-module>
         <config-file target="config.xml" parent="/*">
@@ -80,8 +81,6 @@
 
         <header-file src="src/ios/CDVInAppBrowser.h" />
 	    <source-file src="src/ios/CDVInAppBrowser.m" />
-
 	    <framework src="CoreGraphics.framework" />
     </platform>
-
 </plugin>

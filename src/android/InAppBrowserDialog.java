@@ -20,6 +20,7 @@ package org.apache.cordova.inappbrowser;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.app.Activity;
 
 /**
  * Created by Oliver on 22/11/2013.
@@ -39,14 +40,27 @@ public class InAppBrowserDialog extends Dialog {
 
     public void onBackPressed () {
       // disable the back button on purpose
-      /*
         if (this.inAppBrowser == null) {
             this.dismiss();
         } else {
+            if (this.inAppBrowser.closeAppWithBackButton()) {
+                Activity activity = (Activity) context;
+                activity.moveTaskToBack(true);
+                return;
+            }
+
+            if (this.inAppBrowser.closeWithBackButton()) {
+                this.inAppBrowser.closeDialog();
+                return;
+            }
+
             // better to go through the in inAppBrowser
             // because it does a clean up
-            this.inAppBrowser.closeDialog();
+            if (this.inAppBrowser.hardwareBack() && this.inAppBrowser.canGoBack()) {
+                this.inAppBrowser.goBack();
+            }  else {
+                this.inAppBrowser.closeDialog();
+            }
         }
-        */
     }
 }
