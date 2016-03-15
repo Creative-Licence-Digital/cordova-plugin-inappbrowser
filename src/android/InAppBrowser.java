@@ -711,6 +711,8 @@ public class InAppBrowser extends CordovaPlugin {
                 settings.setJavaScriptEnabled(true);
                 settings.setJavaScriptCanOpenWindowsAutomatically(true);
                 settings.setBuiltInZoomControls(showZoomControls);
+                settings.setDomStorageEnabled(true);
+                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
                 settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 
                 //Toggle whether this is enabled or not!
@@ -721,7 +723,6 @@ public class InAppBrowser extends CordovaPlugin {
                     settings.setDatabasePath(databasePath);
                     settings.setDatabaseEnabled(true);
                 }
-                settings.setDomStorageEnabled(true);
 
                 if (clearAllCache) {
                     CookieManager.getInstance().removeAllCookie();
@@ -734,9 +735,13 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.getSettings().setLoadWithOverviewMode(true);
                 inAppWebView.getSettings().setUseWideViewPort(true);
                 inAppWebView.getSettings().setJavaScriptEnabled(true);
+                inAppWebView.getSettings().setDomStorageEnabled(true);
+                inAppWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
                 inAppWebView.getSettings().setAllowFileAccessFromFileURLs(true);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
+                inAppWebView.clearCache(true);
+                inAppWebView.clearHistory();
 
                 inAppWebView.setWebChromeClient(new WebChromeClient() {
                     @Override
@@ -943,7 +948,7 @@ public class InAppBrowser extends CordovaPlugin {
         }
 
         @Override
-        public void onLoadResource(WebView view, String url) {
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("gap-code://")) {
                 try {
                     String encodedCode = url.substring(11);
@@ -962,6 +967,8 @@ public class InAppBrowser extends CordovaPlugin {
             } else {
                 super.onLoadResource(view, url);
             }
+            return false;
         }
     }
+
 }
