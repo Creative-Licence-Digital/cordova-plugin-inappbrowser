@@ -113,9 +113,9 @@ public class InAppBrowser extends CordovaPlugin {
             }
             final String target = t;
             final HashMap<String, Boolean> features = parseFeature(args.optString(2));
-            
+
             Log.d(LOG_TAG, "target = " + target);
-            
+
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -124,7 +124,7 @@ public class InAppBrowser extends CordovaPlugin {
                     if (SELF.equals(target)) {
                         Log.d(LOG_TAG, "in self");
                         // load in webview
-                        if (url.startsWith("file://") || url.startsWith("javascript:") 
+                        if (url.startsWith("file://") || url.startsWith("javascript:")
                                 || Config.isUrlWhiteListed(url)) {
                             webView.loadUrl(url);
                         }
@@ -154,7 +154,7 @@ public class InAppBrowser extends CordovaPlugin {
                         Log.d(LOG_TAG, "in blank");
                         result = showWebPage(url, features);
                     }
-    
+
                     PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
                     pluginResult.setKeepCallback(true);
                     callbackContext.sendPluginResult(pluginResult);
@@ -220,9 +220,9 @@ public class InAppBrowser extends CordovaPlugin {
      */
     @Override
     public void onReset() {
-        closeDialog();        
+        closeDialog();
     }
-    
+
     /**
      * Called by AccelBroker when listener is to be shut down.
      * Stop listener.
@@ -230,7 +230,7 @@ public class InAppBrowser extends CordovaPlugin {
     public void onDestroy() {
         closeDialog();
     }
-    
+
     /**
      * Inject an object (script or style) into the InAppBrowser WebView.
      *
@@ -275,7 +275,7 @@ public class InAppBrowser extends CordovaPlugin {
 
     /**
      * Put the list of features into a hash map
-     * 
+     *
      * @param optString
      * @return
      */
@@ -353,7 +353,7 @@ public class InAppBrowser extends CordovaPlugin {
                 }
             }
         });
-                // NB: From SDK 19: "If you call methods on WebView from any thread 
+                // NB: From SDK 19: "If you call methods on WebView from any thread
                 // other than your app's UI thread, it can cause unexpected results."
                 // http://developer.android.com/guide/webapps/migrating.html#Threads
                 childView.loadUrl("about:blank");
@@ -417,7 +417,7 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowser getInAppBrowser(){
         return this;
     }
-    
+
     private String getToolbarBackgroundColor() {
         return this.toolbarBackgroundColor;
     }
@@ -450,9 +450,9 @@ public class InAppBrowser extends CordovaPlugin {
                     clearSessionCache = cache.booleanValue();
                 }
             }
-            
+
         }
-        
+
         final CordovaWebView thatWebView = this.webView;
 
         // Create dialog in new thread
@@ -639,7 +639,7 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.getSettings().setUseWideViewPort(true);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
-                
+
                 inAppWebView.setWebChromeClient(new WebChromeClient() {
                     @Override
                     public void onReceivedTitle(WebView view, String title) {
@@ -701,7 +701,7 @@ public class InAppBrowser extends CordovaPlugin {
      *
      * @param obj a JSONObject contain event payload information
      * @param status the status code to return to the JavaScript environment
-     */    
+     */
     private void sendUpdate(JSONObject obj, boolean keepCallback, PluginResult.Status status) {
         if (callbackContext != null) {
             PluginResult result = new PluginResult(status, obj);
@@ -714,7 +714,7 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
 
-    
+
     /**
      * The webview client receives notifications about appView
      */
@@ -745,7 +745,7 @@ public class InAppBrowser extends CordovaPlugin {
             String newloc = "";
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
                 newloc = url;
-            } 
+            }
             // If dialing phone (tel:5551212)
             else if (url.startsWith(WebView.SCHEME_TEL)) {
                 try {
@@ -809,51 +809,57 @@ public class InAppBrowser extends CordovaPlugin {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_START_EVENT);
                 obj.put("url", newloc);
-    
+
                 sendUpdate(obj, true);
             } catch (JSONException ex) {
                 Log.d(LOG_TAG, "Should never happen");
             }
         }
-        
+
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            
+
             try {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
                 obj.put("url", url);
-    
+
                 sendUpdate(obj, true);
             } catch (JSONException ex) {
                 Log.d(LOG_TAG, "Should never happen");
             }
         }
-        
+
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            
+
             try {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_ERROR_EVENT);
                 obj.put("url", failingUrl);
                 obj.put("code", errorCode);
                 obj.put("message", description);
-    
+
                 sendUpdate(obj, true, PluginResult.Status.ERROR);
             } catch (JSONException ex) {
                 Log.d(LOG_TAG, "Should never happen");
             }
-            
+
         }
         
         @Override
-        public void onLoadResource(WebView view, String url) {
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("gap-code://")) {
                 try {
                     String encodedCode = url.substring(11);
-                    String code = URLDecoder.decode(encodedCode, "UTF-8");
-                    this.webView.evaluateJavascript(code, null);
+                    // We do not wish to decode '+' character as a space
+                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
+
+                    String code = URLDecoder.decode(decodeCandidate, "UTF-8");
+                    this.webView.loadUrl("javascript:" + code);
+                    // TODO: Remove if no longer needed. Cannot compile with
+                    // the following code present as the method has been removed
+                    // this.webView.evaluateJavascript(code, null);
                 } catch (UnsupportedEncodingException e) {
                     LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
                     e.printStackTrace();
@@ -861,6 +867,7 @@ public class InAppBrowser extends CordovaPlugin {
             } else {
                 super.onLoadResource(view, url);
             }
+            return false;
         }
     }
 }
