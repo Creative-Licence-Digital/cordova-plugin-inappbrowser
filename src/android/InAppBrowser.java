@@ -846,7 +846,7 @@ public class InAppBrowser extends CordovaPlugin {
             }
 
         }
-        
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("gap-code://")) {
@@ -854,20 +854,17 @@ public class InAppBrowser extends CordovaPlugin {
                     String encodedCode = url.substring(11);
                     // We do not wish to decode '+' character as a space
                     String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
-
                     String code = URLDecoder.decode(decodeCandidate, "UTF-8");
                     this.webView.loadUrl("javascript:" + code);
-                    // TODO: Remove if no longer needed. Cannot compile with
-                    // the following code present as the method has been removed
-                    // this.webView.evaluateJavascript(code, null);
+                    return true;
                 } catch (UnsupportedEncodingException e) {
                     LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
                     e.printStackTrace();
+                    return true;
                 }
             } else {
-                super.onLoadResource(view, url);
+                return super.shouldOverrideUrlLoading(view, url);
             }
-            return false;
         }
     }
 }
