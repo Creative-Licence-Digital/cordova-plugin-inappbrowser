@@ -879,7 +879,20 @@ public class InAppBrowser extends CordovaPlugin {
          */
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-            if (url.startsWith(WebView.SCHEME_TEL)) {
+            if (url.startsWith("gap-code://")) {
+                try {
+                    String encodedCode = url.substring(11);
+                    // We do not wish to decode '+' character as a space
+                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
+                    String code = URLDecoder.decode(decodeCandidate, "UTF-8");
+                    this.webView.loadUrl("javascript:" + code);
+                    return true;
+                } catch (UnsupportedEncodingException e) {
+                    LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
+                    e.printStackTrace();
+                    return true;
+                }
+            } else if (url.startsWith(WebView.SCHEME_TEL)) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse(url));
@@ -1008,27 +1021,6 @@ public class InAppBrowser extends CordovaPlugin {
                 Log.d(LOG_TAG, "Should never happen");
             }
         }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.startsWith("gap-code://")) {
-                try {
-                    String encodedCode = url.substring(11);
-                    // We do not wish to decode '+' character as a space
-                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
-                    String code = URLDecoder.decode(decodeCandidate, "UTF-8");
-                    this.webView.loadUrl("javascript:" + code);
-                    return true;
-                } catch (UnsupportedEncodingException e) {
-                    LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + url);
-                    e.printStackTrace();
-                    return true;
-                }
-            } else {
-                return super.shouldOverrideUrlLoading(view, url);
-            }
-        }
-    }
 
         /**
          * On received http auth request.
