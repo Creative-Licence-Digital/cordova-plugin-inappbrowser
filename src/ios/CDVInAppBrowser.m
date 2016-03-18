@@ -249,16 +249,19 @@
 
 - (void)openInCordovaWebView:(NSURL*)url withOptions:(NSString*)options
 {
-    if ([self.commandDelegate URLIsWhitelisted:url]) {
-        NSURLRequest* request = [NSURLRequest requestWithURL:url];
+    NSURLRequest* request = [NSURLRequest requestWithURL:url];
+
 #ifdef __CORDOVA_4_0_0
-        [self.webViewEngine loadRequest:request];
+    // the webview engine itself will filter for this according to <allow-navigation> policy
+    // in config.xml for cordova-ios-4.0
+    [self.webViewEngine loadRequest:request];
 #else
+    if ([self.commandDelegate URLIsWhitelisted:url]) {
         [self.webView loadRequest:request];
-#endif
     } else { // this assumes the InAppBrowser can be excepted from the white-list
         [self openInInAppBrowser:url withOptions:options];
     }
+#endif
 }
 
 - (void)openInSystem:(NSURL*)url
@@ -281,11 +284,8 @@
 
 - (void)injectDeferredObject:(NSString*)source withWrapper:(NSString*)jsWrapper
 {
-    if (!_injectedIframeBridge) {
-        _injectedIframeBridge = YES;
-        // Create an iframe bridge in the new document to communicate with the CDVInAppBrowserViewController
-        [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"(function(d){var e = _cdvIframeBridge = d.createElement('iframe');e.style.display='none';d.body.appendChild(e);})(document)"];
-    }
+    // Ensure an iframe bridge is created to communicate with the CDVInAppBrowserViewController
+    [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"(function(d){_cdvIframeBridge=d.getElementById('_cdvIframeBridge');if(!_cdvIframeBridge) {var e = _cdvIframeBridge = d.createElement('iframe');e.id='_cdvIframeBridge'; e.style.display='none';d.body.appendChild(e);}})(document)"];
 
     if (jsWrapper != nil) {
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:@[source] options:0 error:nil];
@@ -416,7 +416,13 @@
         NSString* code = [encodedCode stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         [self.commandDelegate evalJs: code];
 
-    } else if ((self.callbackId != nil) && isTopLevelNavigation) {
+    //if is an app store link, let the system handle it, otherwise it fails to load it
+    else if ([[ url scheme] isEqualToString:@"itms-appss"] || [[ url scheme] isEqualToString:@"itms-apps"]) {
+        [theWebView stopLoading];
+        [self openInSystem:url];
+        return NO;
+    }
+    else if ((self.callbackId != nil) && isTopLevelNavigation) {
         // Send a loadstart event for each top-level navigation (includes redirects).
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                       messageAsDictionary:@{@"type":@"loadstart", @"url":[url absoluteString]}];
@@ -430,7 +436,6 @@
 
 - (void)webViewDidStartLoad:(UIWebView*)theWebView
 {
-    _injectedIframeBridge = NO;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView
@@ -538,15 +543,17 @@
     self.webView.scalesPageToFit = NO;
     self.webView.userInteractionEnabled = YES;
 
-    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.spinner.alpha = 1.000;
     self.spinner.autoresizesSubviews = YES;
-    self.spinner.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin);
     self.spinner.clearsContextBeforeDrawing = NO;
     self.spinner.clipsToBounds = NO;
     self.spinner.contentMode = UIViewContentModeScaleToFill;
     self.spinner.frame = CGRectMake(150, 36.0, 20.0, 20.0);
     self.spinner.hidden = YES;
+    self.spinner.frame = CGRectMake(CGRectGetMidX(self.webView.frame), CGRectGetMidY(self.webView.frame), 20.0, 20.0);
+    self.spinner.hidden = NO;
     self.spinner.hidesWhenStopped = YES;
     self.spinner.multipleTouchEnabled = NO;
     self.spinner.opaque = NO;
@@ -818,6 +825,10 @@
     }
 }
 
+- (BOOL)prefersStatusBarHidden {
+    return NO;
+}
+
 - (void)close
 {
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
@@ -1077,6 +1088,33 @@
 @end
 
 @implementation CDVInAppBrowserNavigationController : UINavigationController
+
+- (void) viewDidLoad {
+
+    CGRect frame = [UIApplication sharedApplication].statusBarFrame;
+
+    // simplified from: http://stackoverflow.com/a/25669695/219684
+
+    UIToolbar* bgToolbar = [[UIToolbar alloc] initWithFrame:[self invertFrameIfNeeded:frame]];
+    bgToolbar.barStyle = UIBarStyleDefault;
+    [bgToolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+    [self.view addSubview:bgToolbar];
+
+    [super viewDidLoad];
+}
+
+- (CGRect) invertFrameIfNeeded:(CGRect)rect {
+    // We need to invert since on iOS 7 frames are always in Portrait context
+    if (!IsAtLeastiOSVersion(@"8.0")) {
+        if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+            CGFloat temp = rect.size.width;
+            rect.size.width = rect.size.height;
+            rect.size.height = temp;
+            rect.origin = CGPointZero;
+        }
+    }
+    return rect;
+}
 
 #pragma mark CDVScreenOrientationDelegate
 
