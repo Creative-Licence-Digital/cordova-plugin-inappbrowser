@@ -769,14 +769,9 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.setId(Integer.valueOf(6));
                 inAppWebView.getSettings().setLoadWithOverviewMode(true);
                 inAppWebView.getSettings().setUseWideViewPort(true);
-                inAppWebView.getSettings().setJavaScriptEnabled(true);
-                inAppWebView.getSettings().setDomStorageEnabled(true);
-                inAppWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
                 inAppWebView.getSettings().setAllowFileAccessFromFileURLs(true);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
-                inAppWebView.clearCache(true);
-                inAppWebView.clearHistory();
 
                 inAppWebView.setWebChromeClient(new WebChromeClient() {
                     @Override
