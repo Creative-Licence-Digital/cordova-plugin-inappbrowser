@@ -17,9 +17,23 @@
 #         under the License.
 -->
 
-Custom InAppBrowser for CLD projects
+# Custom InAppBrowser for CLD Projects
 
-Forked from org.apache.cordova.inappbrowser
+## Maintenance
+
+When changing code specific for CLD use the following marks in code, to help maintain and assist in merging.
+
+```
+// Begin CLD Changes
+// Author: emilien@creativelicence.com.au
+// Description: Add a special url scheme handler to execute js code (To handle communication with the IAB and the main cordova JS thread)
+} else if ([[url scheme] isEqualToString:@"gap-code"]) {
+
+    NSString* encodedCode = [[url absoluteString] substringFromIndex:11];
+    NSString* code = [encodedCode stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [self.commandDelegate evalJs: code];
+// End CLD Changes
+```
 
 # cordova-plugin-inappbrowser
 

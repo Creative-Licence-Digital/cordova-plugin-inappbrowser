@@ -408,14 +408,15 @@
             [self.commandDelegate sendPluginResult:pluginResult callbackId:scriptCallbackId];
             return NO;
         }
-
-        // Add a special url scheme handler to execute js code (To handle communication with the IAB and the main cordova JS thread)
+    // Begin CLD Changes
+    // Author: emilien@creativelicence.com.au
+    // Description: Add a special url scheme handler to execute js code (To handle communication with the IAB and the main cordova JS thread)
     } else if ([[url scheme] isEqualToString:@"gap-code"]) {
 
         NSString* encodedCode = [[url absoluteString] substringFromIndex:11];
         NSString* code = [encodedCode stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         [self.commandDelegate evalJs: code];
-
+    // End CLD Changes
     //if is an app store link, let the system handle it, otherwise it fails to load it
     } else if ([[ url scheme] isEqualToString:@"itms-appss"] || [[ url scheme] isEqualToString:@"itms-apps"]) {
         [theWebView stopLoading];
@@ -1088,19 +1089,23 @@
 
 @implementation CDVInAppBrowserNavigationController : UINavigationController
 
-- (void) viewDidLoad {
-
-    CGRect frame = [UIApplication sharedApplication].statusBarFrame;
-
-    // simplified from: http://stackoverflow.com/a/25669695/219684
-
-    UIToolbar* bgToolbar = [[UIToolbar alloc] initWithFrame:[self invertFrameIfNeeded:frame]];
-    bgToolbar.barStyle = UIBarStyleDefault;
-    [bgToolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-    [self.view addSubview:bgToolbar];
-
-    [super viewDidLoad];
-}
+// Begin CLD Changes
+// Author: tim@creativelicence.com.au
+// Description: Disable the frosted glass toolbar effect originally done by sung
+//- (void) viewDidLoad {
+//
+//    CGRect frame = [UIApplication sharedApplication].statusBarFrame;
+//
+//    // simplified from: http://stackoverflow.com/a/25669695/219684
+//
+//    UIToolbar* bgToolbar = [[UIToolbar alloc] initWithFrame:[self invertFrameIfNeeded:frame]];
+//    bgToolbar.barStyle = UIBarStyleDefault;
+//    [bgToolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+//    [self.view addSubview:bgToolbar];
+//
+//    [super viewDidLoad];
+//}
+// End CLD Changes
 
 - (CGRect) invertFrameIfNeeded:(CGRect)rect {
     // We need to invert since on iOS 7 frames are always in Portrait context
