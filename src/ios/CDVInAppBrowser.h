@@ -52,6 +52,11 @@
 @property (nonatomic, assign) BOOL clearsessioncache;
 @property (nonatomic, assign) BOOL fullscreen;
 
+// Begin CLD Changes
+// Author: tim@creativelicence.com.au
+// Description: Property to remove the forward and back navigation controls
+@property (nonatomic, assign) BOOL navigation;
+// End CLD Changes
 @property (nonatomic, copy) NSString* presentationstyle;
 @property (nonatomic, copy) NSString* transitionstyle;
 

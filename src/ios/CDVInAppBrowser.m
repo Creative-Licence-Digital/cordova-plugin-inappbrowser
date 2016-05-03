@@ -655,7 +655,15 @@
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+    // Begin CLD Changes
+    // Author: tim@creativelicence.com.au
+    // Description: Property to remove the forward and back navigation controls
+    if (_browserOptions.navigation) {
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+    } else {
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+    }
+    // End CLD Changes
 
     if (!_browserOptions.fullscreen) {
         self.view.backgroundColor = [UIColor grayColor];
@@ -1033,6 +1041,12 @@
         self.suppressesincrementalrendering = NO;
         self.hidden = NO;
         self.disallowoverscroll = NO;
+
+        // Begin CLD Changes
+        // Author: tim@creativelicence.com.au
+        // Description: Property to remove the forward and back navigation controls
+        self.navigation = YES;
+        // End CLD Changes
     }
 
     return self;
