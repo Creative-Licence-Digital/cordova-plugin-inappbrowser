@@ -563,20 +563,6 @@
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
 
-    // Begin CLD Changes
-    // Author: tim@creativelicence.com.au
-    // Description: Set close button tint color
-    UIColor *closeButtonTintColor = [UIColor whiteColor];
-    if (_browserOptions.closebuttontintcolor) {
-        NSString *rgbString = _browserOptions.closebuttontintcolor;
-        NSRange range = NSMakeRange(1, rgbString.length - 2);
-        NSString *rgbColor = [rgbString substringWithRange:range];
-        NSArray *chunks = [rgbColor componentsSeparatedByString: @";"];
-        closeButtonTintColor = [UIColor colorWithRed:([chunks[0] intValue] / 255.0) green:([chunks[1] intValue] / 255.0) blue:([chunks[2] intValue] / 255.0) alpha:1];
-    }
-    self.closeButton.tintColor = closeButtonTintColor;
-    // End CLD Changes
-
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
     UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -707,6 +693,20 @@
     self.closeButton = nil;
     self.closeButton = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
     self.closeButton.enabled = YES;
+
+    // Begin CLD Changes
+    // Author: tim@creativelicence.com.au
+    // Description: Set close button tint color
+    UIColor *closeButtonTintColor = [UIColor whiteColor];
+    if (_browserOptions.closebuttontintcolor) {
+        NSString *rgbString = _browserOptions.closebuttontintcolor;
+        NSRange range = NSMakeRange(1, rgbString.length - 2);
+        NSString *rgbColor = [rgbString substringWithRange:range];
+        NSArray *chunks = [rgbColor componentsSeparatedByString: @";"];
+        closeButtonTintColor = [UIColor colorWithRed:([chunks[0] intValue] / 255.0) green:([chunks[1] intValue] / 255.0) blue:([chunks[2] intValue] / 255.0) alpha:1];
+    }
+    self.closeButton.tintColor = closeButtonTintColor;
+    // End CLD Changes
 
     NSMutableArray* items = [self.toolbar.items mutableCopy];
     [items replaceObjectAtIndex:0 withObject:self.closeButton];
