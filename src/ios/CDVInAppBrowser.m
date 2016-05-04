@@ -664,21 +664,25 @@
         [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
     }
     // End CLD Changes
-
+    
+    // Begin CLD Changes
+    // Author: emilien@creativelicence.com.au
+    // Description: Style the top navigation area
     if (!_browserOptions.fullscreen) {
         self.view.backgroundColor = [UIColor grayColor];
         [self.view addSubview:self.toolbar];
         [self.view addSubview:self.addressLabel];
         [self.view addSubview:self.titleLabel];
         [self.view addSubview:self.spinner];
-
+        // Style the status bar background
         if (IsAtLeastiOSVersion(@"7.0")) {
             UIView *statusBar = [[UIView alloc] init];
-            statusBar.frame = CGRectMake(0, 0, 320, 20);
+            statusBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 20);
             statusBar.backgroundColor = toolbarBackgroundColor;
             [self.view addSubview:statusBar];
         }
     }
+    // End CLD Changes
 }
 
 - (void) setWebViewFrame : (CGRect) frame {
