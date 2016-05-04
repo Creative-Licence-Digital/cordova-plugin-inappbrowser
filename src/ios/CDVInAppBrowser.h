@@ -60,6 +60,11 @@
 @property (nonatomic, copy) NSString* presentationstyle;
 @property (nonatomic, copy) NSString* transitionstyle;
 
+// Begin CLD Changes
+// Author: tim@creativelicence.com.au
+// Description: Set close button tint color
+@property (nonatomic, copy) NSString* closebuttontintcolor;
+// End CLD Changes
 @property (nonatomic, copy) NSString* toolbarposition;
 @property (nonatomic, copy) NSString* toolbarcolor;
 @property (nonatomic, assign) UIStatusBarStyle statusbarstyle;

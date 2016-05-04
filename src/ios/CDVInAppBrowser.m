@@ -563,6 +563,20 @@
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
 
+    // Begin CLD Changes
+    // Author: tim@creativelicence.com.au
+    // Description: Set close button tint color
+    UIColor *closeButtonTintColor = [UIColor whiteColor];
+    if (_browserOptions.closebuttontintcolor) {
+        NSString *rgbString = _browserOptions.closebuttontintcolor;
+        NSRange range = NSMakeRange(1, rgbString.length - 2);
+        NSString *rgbColor = [rgbString substringWithRange:range];
+        NSArray *chunks = [rgbColor componentsSeparatedByString: @";"];
+        closeButtonTintColor = [UIColor colorWithRed:([chunks[0] intValue] / 255.0) green:([chunks[1] intValue] / 255.0) blue:([chunks[2] intValue] / 255.0) alpha:1];
+    }
+    self.closeButton.tintColor = closeButtonTintColor;
+    // End CLD Changes
+
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
     UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -664,17 +678,14 @@
         [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
     }
     // End CLD Changes
-    
-    // Begin CLD Changes
-    // Author: emilien@creativelicence.com.au
-    // Description: Style the top navigation area
+
     if (!_browserOptions.fullscreen) {
         self.view.backgroundColor = [UIColor grayColor];
         [self.view addSubview:self.toolbar];
         [self.view addSubview:self.addressLabel];
         [self.view addSubview:self.titleLabel];
         [self.view addSubview:self.spinner];
-        // Style the status bar background
+
         if (IsAtLeastiOSVersion(@"7.0")) {
             UIView *statusBar = [[UIView alloc] init];
             statusBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 20);
@@ -682,7 +693,6 @@
             [self.view addSubview:statusBar];
         }
     }
-    // End CLD Changes
 }
 
 - (void) setWebViewFrame : (CGRect) frame {
@@ -697,7 +707,6 @@
     self.closeButton = nil;
     self.closeButton = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
     self.closeButton.enabled = YES;
-    self.closeButton.tintColor = [UIColor whiteColor];
 
     NSMutableArray* items = [self.toolbar.items mutableCopy];
     [items replaceObjectAtIndex:0 withObject:self.closeButton];
