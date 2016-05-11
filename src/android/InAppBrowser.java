@@ -725,7 +725,11 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView = new WebView(cordova.getActivity());
                 inAppWebView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 inAppWebView.setId(Integer.valueOf(6));
-                inAppWebView.setWebChromeClient(new InAppChromeClient(thatWebView));
+                // Begin CLD Changes
+                // Author: tim@creativelicence.com.au
+                // Description: Allow the chrome client to change edittext when the title loads
+                inAppWebView.setWebChromeClient(new InAppChromeClient(thatWebView, edittext));
+                // End CLD Changes
                 WebViewClient client = new InAppBrowserClient(thatWebView, edittext);
                 inAppWebView.setWebViewClient(client);
                 WebSettings settings = inAppWebView.getSettings();
@@ -772,16 +776,6 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.getSettings().setAllowFileAccessFromFileURLs(true);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
-
-                inAppWebView.setWebChromeClient(new WebChromeClient() {
-                    @Override
-                    public void onReceivedTitle(WebView view, String title) {
-                        super.onReceivedTitle(view, title);
-                        if (!TextUtils.isEmpty(title)) {
-                            edittext.setText(title);
-                        }
-                    }
-                });
 
                 // Add the back and forward buttons to our action button container layout
                 actionButtonContainer.addView(back);
@@ -874,6 +868,9 @@ public class InAppBrowser extends CordovaPlugin {
          */
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+          // Begin CLD Changes
+          // Author: tim@creativelicence.com.au
+          // Description: Execute our special middle ware
             if (url.startsWith("gap-code://")) {
                 try {
                     String encodedCode = url.substring(11);
@@ -887,6 +884,7 @@ public class InAppBrowser extends CordovaPlugin {
                     e.printStackTrace();
                     return true;
                 }
+          // End CLD Changes
             } else if (url.startsWith(WebView.SCHEME_TEL)) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_DIAL);

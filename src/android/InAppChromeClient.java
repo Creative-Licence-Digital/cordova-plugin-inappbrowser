@@ -33,16 +33,20 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.GeolocationPermissions.Callback;
+import android.text.TextUtils;
+import android.widget.EditText;
 
 public class InAppChromeClient extends WebChromeClient {
 
     private CordovaWebView webView;
+    private EditText edittext;
     private String LOG_TAG = "InAppChromeClient";
     private long MAX_QUOTA = 100 * 1024 * 1024;
 
-    public InAppChromeClient(CordovaWebView webView) {
+    public InAppChromeClient(CordovaWebView webView, EditText edittext) {
         super();
         this.webView = webView;
+        this.edittext = edittext;
     }
     /**
      * Handle database quota exceeded notification.
@@ -143,5 +147,16 @@ public class InAppChromeClient extends WebChromeClient {
         }
         return false;
     }
+    // Begin CLD Changes
+    // Author: tim@creativelicence.com.au
+    // Description: Change the title text
+    @Override
+    public void onReceivedTitle(WebView view, String title) {
+        super.onReceivedTitle(view, title);
+        if (!TextUtils.isEmpty(title)) {
+            this.edittext.setText(title);
+        }
+    }
+    // End CLD Changes
 
 }
