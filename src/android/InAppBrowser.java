@@ -875,7 +875,7 @@ public class InAppBrowser extends CordovaPlugin {
                 try {
                     String encodedCode = url.substring(11);
                     // We do not wish to decode '+' character as a space
-                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b");
+                    String decodeCandidate = encodedCode.replaceAll("\\+", "%2b").replaceAll("%u", "\\u");
                     String code = URLDecoder.decode(decodeCandidate, "UTF-8");
                     this.webView.loadUrl("javascript:" + code);
                     return true;
