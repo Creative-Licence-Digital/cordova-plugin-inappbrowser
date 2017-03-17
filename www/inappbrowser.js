@@ -79,7 +79,7 @@ InAppBrowser.prototype = {
     }
 };
 
-module.exports = function(strUrl, strWindowName, strWindowFeatures, callbacks) {
+window.CordovaIAB = module.exports = function(strUrl, strWindowName, strWindowFeatures, callbacks) {
     // Don't catch calls that write to existing frames (e.g. named iframes).
     if (window.frames && window.frames[strWindowName]) {
         var origOpenFunc = modulemapper.getOriginalSymbol(window, 'open');
