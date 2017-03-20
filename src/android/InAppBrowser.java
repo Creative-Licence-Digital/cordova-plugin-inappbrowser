@@ -29,6 +29,7 @@ import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
+import org.apache.cordova.PluginManager;
 import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +65,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppBrowser extends CordovaPlugin {
@@ -123,9 +126,37 @@ public class InAppBrowser extends CordovaPlugin {
                     // SELF
                     if (SELF.equals(target)) {
                         Log.d(LOG_TAG, "in self");
+                        /* This code exists for compatibility between 3.x and 4.x versions of Cordova.
+                         * Previously the Config class had a static method, isUrlWhitelisted(). That
+                         * responsibility has been moved to the plugins, with an aggregating method in
+                         * PluginManager.
+                         */
+                        Boolean shouldAllowNavigation = null;
+                        if (url.startsWith("javascript:")) {
+                            shouldAllowNavigation = true;
+                        }
+                        if (shouldAllowNavigation == null) {
+                            try {
+                                Method iuw = Config.class.getMethod("isUrlWhiteListed", String.class);
+                                shouldAllowNavigation = (Boolean)iuw.invoke(null, url);
+                            } catch (NoSuchMethodException e) {
+                            } catch (IllegalAccessException e) {
+                            } catch (InvocationTargetException e) {
+                            }
+                        }
+                        if (shouldAllowNavigation == null) {
+                            try {
+                                Method gpm = webView.getClass().getMethod("getPluginManager");
+                                PluginManager pm = (PluginManager)gpm.invoke(webView);
+                                Method san = pm.getClass().getMethod("shouldAllowNavigation", String.class);
+                                shouldAllowNavigation = (Boolean)san.invoke(pm, url);
+                            } catch (NoSuchMethodException e) {
+                            } catch (IllegalAccessException e) {
+                            } catch (InvocationTargetException e) {
+                            }
+                        }
                         // load in webview
-                        if (url.startsWith("file://") || url.startsWith("javascript:")
-                                || Config.isUrlWhiteListed(url)) {
+                        if (Boolean.TRUE.equals(shouldAllowNavigation)) {
                             webView.loadUrl(url);
                         }
                         //Load the dialer
