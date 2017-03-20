@@ -647,6 +647,8 @@ public class InAppBrowser extends CordovaPlugin {
                 settings.setJavaScriptCanOpenWindowsAutomatically(true);
                 settings.setBuiltInZoomControls(true);
                 settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
+                settings.setAllowFileAccessFromFileURLs(true);
+                settings.setAllowUniversalAccessFromFileURLs(true);
 
                 //Toggle whether this is enabled or not!
                 Bundle appSettings = cordova.getActivity().getIntent().getExtras();
