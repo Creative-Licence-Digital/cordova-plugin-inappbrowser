@@ -127,7 +127,12 @@ public class InAppChromeClient extends WebChromeClient {
                 try {
                     String encodedCode = defaultValue.substring(11);
                     String code = URLDecoder.decode(encodedCode, "UTF-8");
-                    this.webView.evaluateJavascript(code, null);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                        // This action will have the side-effect of blurring the currently focused element
+                        this.webView.loadUrl("javascript:" + code);
+                    } else {
+                        this.webView.evaluateJavascript(code, null);
+                    }
                 } catch (UnsupportedEncodingException e) {
                     LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + defaultValue);
                     e.printStackTrace();
@@ -136,7 +141,7 @@ public class InAppChromeClient extends WebChromeClient {
             else
             {
                 // Anything else with a gap: prefix should get this message
-                LOG.w(LOG_TAG, "InAppBrowser does not support Cordova API calls: " + url + " " + defaultValue); 
+                LOG.w(LOG_TAG, "InAppBrowser does not support Cordova API calls: " + url + " " + defaultValue);
                 result.cancel();
                 return true;
             }
