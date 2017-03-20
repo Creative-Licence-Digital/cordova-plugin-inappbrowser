@@ -127,12 +127,8 @@ public class InAppChromeClient extends WebChromeClient {
                 try {
                     String encodedCode = defaultValue.substring(11);
                     String code = URLDecoder.decode(encodedCode, "UTF-8");
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                        // This action will have the side-effect of blurring the currently focused element
-                        this.webView.loadUrl("javascript:" + code);
-                    } else {
-                        this.webView.evaluateJavascript(code, null);
-                    }
+                    // This action will have the side-effect of blurring the currently focused element
+                    this.webView.loadUrl("javascript:" + code);
                 } catch (UnsupportedEncodingException e) {
                     LOG.w(LOG_TAG, "InAppBrowser cannot decode url: " + defaultValue);
                     e.printStackTrace();
