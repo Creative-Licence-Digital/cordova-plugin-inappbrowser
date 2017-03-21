@@ -18,29 +18,12 @@
 */
 package org.apache.cordova.inappbrowser;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.Config;
-import org.apache.cordova.CordovaArgs;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.LOG;
-import org.apache.cordova.PluginManager;
-import org.apache.cordova.PluginResult;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -537,10 +520,6 @@ public class InAppBrowser extends CordovaPlugin {
         return this;
     }
 
-    private String getToolbarBackgroundColor() {
-        return this.toolbarBackgroundColor;
-    }
-
     /**
      * Display a new browser with the specified URL.
      *
@@ -708,9 +687,7 @@ public class InAppBrowser extends CordovaPlugin {
                 edittext.setLayoutParams(textLayoutParams);
                 edittext.setId(Integer.valueOf(4));
                 edittext.setSingleLine(true);
-                edittext.setBackgroundColor(toolbarColor);
                 edittext.setText(url);
-                edittext.setTextColor(Color.WHITE);
                 edittext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
                 edittext.setImeOptions(EditorInfo.IME_ACTION_GO);
                 edittext.setInputType(InputType.TYPE_NULL); // Will not except input... Makes the text NON-EDITABLE
@@ -843,16 +820,6 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.getSettings().setUseWideViewPort(useWideViewPort);
                 inAppWebView.requestFocus();
                 inAppWebView.requestFocusFromTouch();
-
-                inAppWebView.setWebChromeClient(new WebChromeClient() {
-                    @Override
-                    public void onReceivedTitle(WebView view, String title) {
-                        super.onReceivedTitle(view, title);
-                        if (!TextUtils.isEmpty(title)) {
-                            edittext.setText(title);
-                        }
-                    }
-                });
 
                 // Add the back and forward buttons to our action button container layout
                 actionButtonContainer.addView(back);
