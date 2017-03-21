@@ -21,9 +21,9 @@
 #import <Cordova/CDVScreenOrientationDelegate.h>
 
 #ifdef __CORDOVA_4_0_0
-#import <Cordova/CDVUIWebViewDelegate.h>
+    #import <Cordova/CDVUIWebViewDelegate.h>
 #else
-#import <Cordova/CDVWebViewDelegate.h>
+    #import <Cordova/CDVWebViewDelegate.h>
 #endif
 
 @class CDVInAppBrowserViewController;

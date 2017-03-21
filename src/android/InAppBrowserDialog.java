@@ -21,6 +21,9 @@ package org.apache.cordova.inappbrowser;
 import android.app.Dialog;
 import android.content.Context;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Oliver on 22/11/2013.
  */
@@ -45,7 +48,11 @@ public class InAppBrowserDialog extends Dialog {
         } else {
             // better to go through the in inAppBrowser
             // because it does a clean up
-            this.inAppBrowser.closeDialog();
+            if (this.inAppBrowser.hardwareBack() && this.inAppBrowser.canGoBack()) {
+                this.inAppBrowser.goBack();
+            }  else {
+                this.inAppBrowser.closeDialog();
+            }
         }
         */
     }
